@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rover Dashboard</title>
+    <style>
+        body { 
+            font-family: 'Courier New', Courier, monospace; 
+            background-color: #0d1117; 
+            color: #58a6ff; 
+            text-align: center; 
+            margin-top: 50px; 
+        }
+        .dashboard-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+        }
+        .metric-box { 
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 30px;
+            width: 200px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+        }
+        .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #3fb950;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Enterprise Control Room: Rover Telemetry</h1>
+    <h3 style="color: #8b949e;">Live System Status: <span id="status" style="color: #3fb950;">ONLINE</span></h3>
+    
+    <div class="dashboard-container">
+        <div class="metric-box">
+            <div>FRONT LEFT (RPM)</div>
+            <div class="value" id="left_rpm">0.0</div>
+        </div>
+        <div class="metric-box">
+            <div>FRONT RIGHT (RPM)</div>
+            <div class="value" id="right_rpm">0.0</div>
+        </div>
+        <div class="metric-box">
+            <div>VOLTAGE (V)</div>
+            <div class="value" id="voltage">0.0</div>
+        </div>
+    </div>
+
+    <script>
+        // This function asks the Flask server for new data every 1000 milliseconds (1 second)
+        setInterval(() => {
+            fetch('/api/telemetry')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('status').innerText = data.status.toUpperCase();
+                    document.getElementById('left_rpm').innerText = data.front_left_rpm;
+                    document.getElementById('right_rpm').innerText = data.front_right_rpm;
+                    document.getElementById('voltage').innerText = data.system_voltage;
+                });
+        }, 1000); 
+    </script>
+</body>
+</html>

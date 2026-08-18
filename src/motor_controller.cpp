@@ -52,11 +52,28 @@ public:
 
 
 int main() {
+    std::cout << "--- Initializing 4WD Rover Drivetrain ---\n";
+
+    // 1. Instantiate 4 independent motors.
+    // Parameters: Target Speed, Current Speed, kp, ki, kd
     
-    MotorController front_left_motor(50.0, 40.0, 0.5, 0.1, 0.05);
+    // LEFT SIDE: Pushing hard at 50 RPM
+    MotorController front_left(50.0, 0.0, 0.5, 0.1, 0.05);
+    MotorController rear_left(50.0, 0.0, 0.5, 0.1, 0.05);
 
-    // Command the motor to execute the loop and stabilize
-    front_left_motor.run_pid_loop();
+    // RIGHT SIDE: Braking at 20 RPM to force a sharp right turn
+    MotorController front_right(20.0, 0.0, 0.5, 0.1, 0.05);
+    MotorController rear_right(20.0, 0.0, 0.5, 0.1, 0.05);
 
+    // 2. Execute the PID loops for the turn maneuver
+    std::cout << "\n[Executing Left Side Acceleration...]\n";
+    front_left.run_pid_loop();
+    rear_left.run_pid_loop(); // Uncommented to run
+
+    std::cout << "\n[Executing Right Side Braking...]\n";
+    front_right.run_pid_loop();
+    rear_right.run_pid_loop(); // Uncommented to run
+
+    std::cout << "\n--- Turn Maneuver Complete ---\n";
     return 0;
 }
