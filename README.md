@@ -1,3 +1,5 @@
+[![Rover core tests](https://github.com/sksharma903231/robotics_phase2/actions/workflows/core-tests.yml/badge.svg)](https://github.com/sksharma903231/robotics_phase2/actions/workflows/core-tests.yml)
+
 # Enterprise Rover (Phase 2): Autonomous Drivetrain Control, Perception & Telemetry
 
 A modular robotics simulation project demonstrating C++, Python, ROS 2, URDF modeling, Gazebo integration, and real-time telemetry teleoperations.
