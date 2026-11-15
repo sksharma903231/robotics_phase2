@@ -1,1 +1,35 @@
+# Build and artifact outputs
 build/
+bin/
+lib/
+*.o
+*.a
+*.so
+
+# ROS 2 colcon workspaces
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+*.colcon_install_layout
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+venv/
+.venv/
+env/
+
+# Runtime / Telemetry scratch files
+/tmp/rover_telemetry.json*
+
+# IDE and editors
+.idea/
+*.iml
+.vscode/
+skills/
+*.swp
+*~
+.DS_Store

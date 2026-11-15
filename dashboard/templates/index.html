@@ -2,68 +2,174 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Rover Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Rover Telemetry Control Room</title>
     <style>
-        body { 
-            font-family: 'Courier New', Courier, monospace; 
-            background-color: #0d1117; 
-            color: #58a6ff; 
-            text-align: center; 
-            margin-top: 50px; 
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --border-color: #30363d;
+            --text-primary: #c9d1d9;
+            --text-accent: #58a6ff;
+            --green: #3fb950;
+            --yellow: #d29922;
+            --red: #f85149;
         }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color); 
+            color: var(--text-primary); 
+            text-align: center; 
+            margin: 0;
+            padding: 40px 20px;
+        }
+        h1 {
+            color: var(--text-accent);
+            margin-bottom: 5px;
+            font-size: 2rem;
+        }
+        .subtitle {
+            color: #8b949e;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border: 1px solid var(--border-color);
+            background: #21262d;
+            color: var(--green);
+            transition: all 0.3s ease;
+        }
+        .status-online { color: var(--green); border-color: rgba(63, 185, 80, 0.4); }
+        .status-stale { color: var(--yellow); border-color: rgba(210, 153, 34, 0.4); }
+        .status-offline { color: var(--red); border-color: rgba(248, 81, 73, 0.4); }
+
         .dashboard-container {
             display: flex;
             justify-content: center;
+            flex-wrap: wrap;
             gap: 20px;
-            margin-top: 40px;
+            max-width: 900px;
+            margin: 30px auto 10px auto;
         }
         .metric-box { 
-            background-color: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            padding: 30px;
-            width: 200px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 24px 20px;
+            min-width: 180px;
+            flex: 1 1 180px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            transition: transform 0.2s;
         }
-        .value {
-            font-size: 2.5em;
+        .metric-box:hover {
+            transform: translateY(-2px);
+        }
+        .metric-title {
+            color: #8b949e;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        .value { 
+            font-size: 2.2rem;
+            font-family: 'Courier New', Courier, monospace;
             font-weight: bold;
-            color: #3fb950;
-            margin-top: 10px;
+            color: var(--green);
+        }
+        .unit {
+            font-size: 0.9rem;
+            color: #8b949e;
+            margin-left: 4px;
+        }
+        .meta-bar {
+            color: #6e7681;
+            font-size: 0.85rem;
+            margin-top: 30px;
         }
     </style>
 </head>
 <body>
-    <h1>Enterprise Control Room: Rover Telemetry</h1>
-    <h3 style="color: #8b949e;">Live System Status: <span id="status" style="color: #3fb950;">ONLINE</span></h3>
+    <h1>Enterprise Rover Control Room</h1>
+    <div class="subtitle">Real-Time Drivetrain & Telemetry Teleoperations</div>
+    
+    <div style="margin: 15px 0;">
+        <span class="status-badge status-offline" id="status-badge">CONNECTING...</span>
+    </div>
     
     <div class="dashboard-container">
         <div class="metric-box">
-            <div>FRONT LEFT (RPM)</div>
-            <div class="value" id="left_rpm">0.0</div>
+            <div class="metric-title">Front Left Wheel</div>
+            <div class="value"><span id="left_rpm">0.0</span><span class="unit">RPM</span></div>
         </div>
         <div class="metric-box">
-            <div>FRONT RIGHT (RPM)</div>
-            <div class="value" id="right_rpm">0.0</div>
+            <div class="metric-title">Front Right Wheel</div>
+            <div class="value"><span id="right_rpm">0.0</span><span class="unit">RPM</span></div>
         </div>
         <div class="metric-box">
-            <div>VOLTAGE (V)</div>
-            <div class="value" id="voltage">0.0</div>
+            <div class="metric-title">Rear Left Wheel</div>
+            <div class="value"><span id="rear_left_rpm">0.0</span><span class="unit">RPM</span></div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-title">Rear Right Wheel</div>
+            <div class="value"><span id="rear_right_rpm">0.0</span><span class="unit">RPM</span></div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-title">System Bus Voltage</div>
+            <div class="value"><span id="voltage">0.0</span><span class="unit">V</span></div>
         </div>
     </div>
 
+    <div class="meta-bar">
+        Telemetry Stream: <span id="telemetry-msg">Connecting to telemetry endpoint...</span> | Last Sync: <span id="sync-time">--</span>
+    </div>
+
     <script>
-        // This function asks the Flask server for new data every 1000 milliseconds (1 second)
-        setInterval(() => {
+        function updateTelemetry() {
             fetch('/api/telemetry')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('status').innerText = data.status.toUpperCase();
-                    document.getElementById('left_rpm').innerText = data.front_left_rpm;
-                    document.getElementById('right_rpm').innerText = data.front_right_rpm;
-                    document.getElementById('voltage').innerText = data.system_voltage;
+                    const badge = document.getElementById('status-badge');
+                    const rawStatus = (data.status || 'offline').toLowerCase();
+
+                    badge.innerText = 'STATUS: ' + rawStatus.toUpperCase();
+                    badge.className = 'status-badge';
+                    if (rawStatus.includes('online')) {
+                        badge.classList.add('status-online');
+                    } else if (rawStatus.includes('stale')) {
+                        badge.classList.add('status-stale');
+                    } else {
+                        badge.classList.add('status-offline');
+                    }
+
+                    document.getElementById('left_rpm').innerText = Number(data.front_left_rpm || 0).toFixed(1);
+                    document.getElementById('right_rpm').innerText = Number(data.front_right_rpm || 0).toFixed(1);
+                    document.getElementById('rear_left_rpm').innerText = Number(data.rear_left_rpm || data.front_left_rpm || 0).toFixed(1);
+                    document.getElementById('rear_right_rpm').innerText = Number(data.rear_right_rpm || data.front_right_rpm || 0).toFixed(1);
+                    document.getElementById('voltage').innerText = Number(data.system_voltage || 0).toFixed(1);
+
+                    document.getElementById('telemetry-msg').innerText = data.message || (rawStatus.includes('online') ? 'Active Stream' : 'Awaiting Data');
+                    document.getElementById('sync-time').innerText = new Date().toLocaleTimeString();
+                })
+                .catch(err => {
+                    const badge = document.getElementById('status-badge');
+                    badge.innerText = 'STATUS: DISCONNECTED';
+                    badge.className = 'status-badge status-offline';
+                    document.getElementById('telemetry-msg').innerText = 'Network/Server connection error';
                 });
-        }, 1000); 
+        }
+
+        // Poll telemetry endpoint every 1000ms
+        setInterval(updateTelemetry, 1000);
+        updateTelemetry();
     </script>
 </body>
 </html>

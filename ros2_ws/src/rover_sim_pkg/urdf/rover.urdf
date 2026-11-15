@@ -1,24 +1,39 @@
 <?xml version="1.0"?>
 <robot name="enterprise_rover">
 
-  <!-- Base Footprint / Root Link -->
+  <!-- Materials -->
+  <material name="chassis_blue">
+    <color rgba="0.1 0.3 0.8 1.0"/>
+  </material>
+  <material name="wheel_dark">
+    <color rgba="0.15 0.15 0.15 1.0"/>
+  </material>
+  <material name="lidar_black">
+    <color rgba="0.05 0.05 0.05 1.0"/>
+  </material>
+  <material name="caster_silver">
+    <color rgba="0.7 0.7 0.7 1.0"/>
+  </material>
+
+  <!-- Base Link / Chassis -->
   <link name="base_link">
     <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <box size="0.6 0.4 0.2"/>
       </geometry>
-      <material name="blue">
-        <color rgba="0.0 0.0 0.8 1.0"/>
-      </material>
+      <material name="chassis_blue"/>
     </visual>
     <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <box size="0.6 0.4 0.2"/>
       </geometry>
     </collision>
     <inertial>
       <mass value="5.0"/>
-      <inertia ixx="0.08" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.12"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.083" ixy="0.0" ixz="0.0" iyy="0.166" iyz="0.0" izz="0.216"/>
     </inertial>
   </link>
 
@@ -28,9 +43,7 @@
       <geometry>
         <cylinder radius="0.1" length="0.05"/>
       </geometry>
-      <material name="black">
-        <color rgba="0.1 0.1 0.1 1.0"/>
-      </material>
+      <material name="wheel_dark"/>
     </visual>
     <collision>
       <geometry>
@@ -39,15 +52,15 @@
     </collision>
     <inertial>
       <mass value="1.0"/>
-      <inertia ixx="0.002" ixy="0.0" ixz="0.0" iyy="0.002" iyz="0.0" izz="0.004"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.0027" ixy="0.0" ixz="0.0" iyy="0.0027" iyz="0.0" izz="0.005"/>
     </inertial>
   </link>
 
-  <!-- Left Wheel Joint (Continuous rotation for motor control) -->
   <joint name="left_wheel_joint" type="continuous">
     <parent link="base_link"/>
     <child link="left_wheel"/>
-    <origin xyz="0.0 0.22 -0.05" rpy="-1.5707 0.0 0.0"/>
+    <origin xyz="0.0 0.23 -0.05" rpy="-1.5707963 0.0 0.0"/>
     <axis xyz="0.0 0.0 1.0"/>
   </joint>
 
@@ -57,9 +70,7 @@
       <geometry>
         <cylinder radius="0.1" length="0.05"/>
       </geometry>
-      <material name="black">
-        <color rgba="0.1 0.1 0.1 1.0"/>
-      </material>
+      <material name="wheel_dark"/>
     </visual>
     <collision>
       <geometry>
@@ -68,16 +79,168 @@
     </collision>
     <inertial>
       <mass value="1.0"/>
-      <inertia ixx="0.002" ixy="0.0" ixz="0.0" iyy="0.002" iyz="0.0" izz="0.004"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.0027" ixy="0.0" ixz="0.0" iyy="0.0027" iyz="0.0" izz="0.005"/>
     </inertial>
   </link>
 
-  <!-- Right Wheel Joint -->
   <joint name="right_wheel_joint" type="continuous">
     <parent link="base_link"/>
     <child link="right_wheel"/>
-    <origin xyz="0.0 -0.22 -0.05" rpy="-1.5707 0.0 0.0"/>
+    <origin xyz="0.0 -0.23 -0.05" rpy="-1.5707963 0.0 0.0"/>
     <axis xyz="0.0 0.0 1.0"/>
   </joint>
+
+  <!-- Front Stabilizer Caster -->
+  <link name="front_caster">
+    <visual>
+      <geometry>
+        <sphere radius="0.05"/>
+      </geometry>
+      <material name="caster_silver"/>
+    </visual>
+    <collision>
+      <geometry>
+        <sphere radius="0.05"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.0005" ixy="0.0" ixz="0.0" iyy="0.0005" iyz="0.0" izz="0.0005"/>
+    </inertial>
+  </link>
+
+  <joint name="front_caster_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="front_caster"/>
+    <origin xyz="0.22 0.0 -0.1" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Rear Stabilizer Caster -->
+  <link name="rear_caster">
+    <visual>
+      <geometry>
+        <sphere radius="0.05"/>
+      </geometry>
+      <material name="caster_silver"/>
+    </visual>
+    <collision>
+      <geometry>
+        <sphere radius="0.05"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.0005" ixy="0.0" ixz="0.0" iyy="0.0005" iyz="0.0" izz="0.0005"/>
+    </inertial>
+  </link>
+
+  <joint name="rear_caster_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="rear_caster"/>
+    <origin xyz="-0.22 0.0 -0.1" rpy="0 0 0"/>
+  </joint>
+
+  <!-- LiDAR Sensor Link -->
+  <link name="lidar_link">
+    <visual>
+      <geometry>
+        <cylinder radius="0.06" length="0.08"/>
+      </geometry>
+      <material name="lidar_black"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.06" length="0.08"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.3"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.0004" ixy="0.0" ixz="0.0" iyy="0.0004" iyz="0.0" izz="0.0005"/>
+    </inertial>
+  </link>
+
+  <joint name="lidar_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="lidar_link"/>
+    <origin xyz="0.18 0.0 0.14" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Gazebo Physics and Plugins Configuration -->
+  <gazebo reference="front_caster">
+    <mu1>0.001</mu1>
+    <mu2>0.001</mu2>
+  </gazebo>
+
+  <gazebo reference="rear_caster">
+    <mu1>0.001</mu1>
+    <mu2>0.001</mu2>
+  </gazebo>
+
+  <gazebo reference="left_wheel">
+    <mu1>1.2</mu1>
+    <mu2>1.2</mu2>
+  </gazebo>
+
+  <gazebo reference="right_wheel">
+    <mu1>1.2</mu1>
+    <mu2>1.2</mu2>
+  </gazebo>
+
+  <gazebo reference="lidar_link">
+    <sensor name="lidar" type="gpu_lidar">
+      <always_on>true</always_on>
+      <update_rate>10</update_rate>
+      <topic>/scan</topic>
+      <gz_frame_id>lidar_link</gz_frame_id>
+      <lidar>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.14159265</min_angle>
+            <max_angle>3.14159265</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.10</min>
+          <max>30.0</max>
+          <resolution>0.01</resolution>
+        </range>
+      </lidar>
+    </sensor>
+  </gazebo>
+
+  <!-- Gazebo Sim Systems Plugins -->
+  <gazebo>
+    <!-- Differential Drive Plugin -->
+    <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+      <left_joint>left_wheel_joint</left_joint>
+      <right_joint>right_wheel_joint</right_joint>
+      <wheel_separation>0.46</wheel_separation>
+      <wheel_radius>0.1</wheel_radius>
+      <max_linear_acceleration>2.0</max_linear_acceleration>
+      <topic>/cmd_vel</topic>
+      <odom_topic>/odom</odom_topic>
+      <tf_topic>/tf</tf_topic>
+      <frame_id>odom</frame_id>
+      <child_frame_id>base_link</child_frame_id>
+    </plugin>
+
+    <!-- Joint State Publisher Plugin -->
+    <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
+      <topic>/joint_states</topic>
+      <joint_name>left_wheel_joint</joint_name>
+      <joint_name>right_wheel_joint</joint_name>
+    </plugin>
+
+    <!-- Sensors Plugin for LiDAR -->
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+  </gazebo>
 
 </robot>

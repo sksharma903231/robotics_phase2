@@ -1,4 +1,0 @@
-Invoking command in '/home/lenovo/robotics_phase2/ros2_ws/build/rover_sim_pkg': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/lyrical /usr/bin/cmake --build /home/lenovo/robotics_phase2/ros2_ws/build/rover_sim_pkg -- -j12 -l12
-Invoked command in '/home/lenovo/robotics_phase2/ros2_ws/build/rover_sim_pkg' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/lyrical /usr/bin/cmake --build /home/lenovo/robotics_phase2/ros2_ws/build/rover_sim_pkg -- -j12 -l12
-Invoking command in '/home/lenovo/robotics_phase2/ros2_ws/build/rover_sim_pkg': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/lyrical /usr/bin/cmake --install /home/lenovo/robotics_phase2/ros2_ws/build/rover_sim_pkg
-Invoked command in '/home/lenovo/robotics_phase2/ros2_ws/build/rover_sim_pkg' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/lyrical /usr/bin/cmake --install /home/lenovo/robotics_phase2/ros2_ws/build/rover_sim_pkg
